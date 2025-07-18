@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lord of Mysteries RPG</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: #1a1a1a;
+    }
+    #gameContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="720" height="1280"></canvas>
+    <div class="overlay" id="status"></div>
+  </div>
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const status = document.getElementById("status");
+
+    let gameState = "title";
+    let sanity = 50;
+    let pathway = "Seer";
+    let combatCooldown = 0;
+    let currentChapter = 1;
+
+    const player = {
+      name: "",
+      hp: 100,
+      maxHp: 100,
+      mp: 50,
+      maxMp: 50,
+      insanity: 0,
+      ritualCount: 0,
+      inventory: [],
+      pathway: "",
+    };
+
+    const storyText = [
+      "In the mystical world of Lord of Mysteries, you are a humble Seer, born into the ancient arts of divination.",
+      "Chapter 1: The Awakening\nYou wake up in a small, dimly lit room, the scent of incense lingering in the air. You are in your master's quarters, a wise but enigmatic figure. The room is filled with ancient books and arcane artifacts.",
+      "Your master approaches, his voice gravely serious. 'A great disaster is coming. I have foreseen it. You must venture out and face what lies ahead. But beware, the path is filled with danger, and your sanity will be tested.'",
+      "As you gather your belongings — a dagger, a strange candle, and a few other tools — your master gives you a warning: 'You are not alone in this world. There are others, watching. Some wish to help you, others to destroy you.'",
+      "Chapter 2: Into the Forest\nYou step outside, the cold night air hits your face. Before you lies a vast forest, its trees towering high into the sky. There are whispers on the wind, voices of the lost. Will you brave the forest's depths, or return to your village for safety?",
+      "As you walk deeper into the forest, you feel the presence of something ancient, something watching you from the shadows. Your path is unclear. The forest seems endless, but you push forward.",
+      "Suddenly, you encounter a mysterious figure cloaked in black. He steps into the moonlight, revealing his face. It’s an old man, but his eyes are filled with malice. 'I’ve been waiting for you,' he says, raising his hand in a gesture of power.",
+      "Chapter 3: The Dark Ones\nThe old man reveals himself as a member of a dark order, bent on resurrecting an ancient evil. 'The ritual must be completed,' he says, laughing darkly. 'Only then will you understand your true purpose.'",
+      "A battle ensues, and you must decide: Will you fight back with your magic, or use your wits to outsmart him? Every decision leads you down a different path, and with each choice, your sanity is tested.",
+      "As you defeat the old man, you realize that your journey has only just begun. The world is full of dangers and mysteries, and your power, as well as your sanity, will continue to grow or fade based on your choices."
+    ];
+
+    function drawTitleScreen() {
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      ctx.font = "40px Courier";
+      ctx.fillText("Lord of Mysteries RPG", 150, 200);
+      ctx.font = "20px Courier";
+      ctx.fillText("Tap to Begin...", 270, 300);
+    }
+
+    function drawGameplay() {
+      ctx.fillStyle = "#1a1a1a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ddd";
+      ctx.font = "18px Courier";
+      ctx.fillText("Chapter " + currentChapter, 20, 30);
+      ctx.fillText("HP: " + player.hp + "/" + player.maxHp, 20, 60);
+      ctx.fillText("MP: " + player.mp + "/" + player.maxMp, 20, 90);
+      ctx.fillText("Sanity: " + (100 - player.insanity), 20, 120);
+      ctx.fillText("Pathway: " + player.pathway, 20, 150);
+
+      ctx.font = "16px Courier";
+      ctx.fillText(storyText[currentChapter - 1], 20, 200);
+    }
+
+    function gameLoop() {
+      if (gameState === "title") {
+        drawTitleScreen();
+      } else if (gameState === "gameplay") {
+        drawGameplay();
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    canvas.addEventListener("click", () => {
+      if (gameState === "title") {
+        gameState = "gameplay";
+        player.name = "Nameless Seer";
+        player.pathway = "Seer";
+        player.inventory = ["Cursed Candle", "Ritual Dagger"];
+        player.ritualCount = 1;
+        player.insanity = 20;
+        currentChapter = 1;
+      } else if (gameState === "gameplay") {
+        player.insanity += 1;
+        if (player.insanity > 90) player.insanity = 90;
+        currentChapter += 1;
+        if (currentChapter > storyText.length) currentChapter = storyText.length;  // End of story
+      }
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>
