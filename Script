@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BitbitRPG</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: #1a1a1a;
+    }
+    #gameContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="720" height="1280"></canvas>
+    <div class="overlay" id="status"></div>
+  </div>  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const status = document.getElementById("status");
+
+    let gameState = "title";
+    let sanity = 50;
+    let pathway = "Seer";
+    let combatCooldown = 0;
+    let currentChapter = 1;
+
+    const player = {
+      name: "",
+      hp: 100,
+      maxHp: 100,
+      mp: 50,
+      maxMp: 50,
+      insanity: 0,
+      ritualCount: 0,
+      inventory: [],
+      pathway: "",
+    };
+
+    function drawTitleScreen() {
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+      ctx.font = "40px Courier";
+      ctx.fillText("BitbitRPG", 260, 200);
+      ctx.font = "20px Courier";
+      ctx.fillText("Tap to Begin...", 270, 300);
+    }
+
+    function drawGameplay() {
+      ctx.fillStyle = "#1a1a1a";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ddd";
+      ctx.font = "18px Courier";
+      ctx.fillText("Chapter " + currentChapter, 20, 30);
+      ctx.fillText("HP: " + player.hp + "/" + player.maxHp, 20, 60);
+      ctx.fillText("MP: " + player.mp + "/" + player.maxMp, 20, 90);
+      ctx.fillText("Sanity: " + (100 - player.insanity), 20, 120);
+      ctx.fillText("Pathway: " + player.pathway, 20, 150);
+    }
+
+    function gameLoop() {
+      if (gameState === "title") {
+        drawTitleScreen();
+      } else if (gameState === "gameplay") {
+        drawGameplay();
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    canvas.addEventListener("click", () => {
+      if (gameState === "title") {
+        gameState = "gameplay";
+        player.name = "Nameless Bit";
+        player.pathway = "Seer";
+        player.inventory = ["Cursed Candle", "Ritual Dagger"];
+        player.ritualCount = 1;
+        player.insanity = 20;
+        currentChapter = 1;
+      } else if (gameState === "gameplay") {
+        player.insanity += 1;
+        if (player.insanity > 90) player.insanity = 90;
+        currentChapter += 1;
+        if (currentChapter > 12) currentChapter = 12;
+      }
+    });
+
+    gameLoop();
+  </script></body>
+</html>
